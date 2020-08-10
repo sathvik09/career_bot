@@ -4,11 +4,7 @@ const mongoose = require('mongoose');
 const { Db } = require('mongodb');
 const config = require('./config.json');
 
-mongoose.connect('mongodb+srv://admin:admin123456@cluster0-ap5zw.mongodb.net/DiscordBot?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
-  });
+// mongose connection is secret
 
 var Schema=mongoose.Schema;
 
