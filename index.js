@@ -1,10 +1,18 @@
- const Discord = require('discord.js');
+const Discord = require('discord.js');
 const bot = new Discord.Client();
 const mongoose = require('mongoose');
 const { Db } = require('mongodb');
-const config = require('./config.json');
 
-// mongose connection is secret
+var accountSid = 'ACd8eb1c84bbe4a0275a6a463df31cd566';
+var authToken = process.env.twillio_token;
+var twilio = require('twilio');
+var client = new twilio(accountSid, authToken);
+
+mongoose.connect(process.env.mongo, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+  });
 
 var Schema=mongoose.Schema;
 
@@ -41,16 +49,7 @@ const FieldSchema = new mongoose.Schema({
 const Field = mongoose.model('Field', FieldSchema);
 
 const prefix = '$';
-bot.login(config.token);
-// let n="Akshay";
-// Field.find({field_name: n},function(err,found){
-//     if(!err)
-//         console.log(found);
-// });
-
-// Mentor.countDocuments({},function(err,count){
-//     console.log(count);
-// });
+bot.login(process.env.token);
 
 const exampleEmbed = new Discord.MessageEmbed()
 	.setColor('#0099ff')
@@ -250,7 +249,16 @@ bot.on('message',msg=>{
                                           })
                                           break;
                                case 'contact_us' : msg.reply("you can contact us on ska.agrawal5@gmail.com !");
-                                                   break;                              
+                                                   break;
+                               case 'refer_a_friend' : if(!args[1]){
+                                                         msg.reply("Enter a valid Phone no !");
+                                                         break;
+                                                       }
+                                                       else{
+                                                           sms(args[1]);
+                                                           msg.reply("Invite sent!");
+                                                           break;
+                                                       }                                         
                         }
                                
                                 
@@ -258,6 +266,7 @@ bot.on('message',msg=>{
 bot.on('ready',()=>{
     console.log("This bot is alive");
 })
+
 
 let field = (x,desc)=>{
     
@@ -313,4 +322,15 @@ let mentlist = (aboutMen,field1,contact,name)=>{
             Embed.addFields({name:field1,value:contact});
     
     return Embed;
+}
+
+let sms = (no)=>{
+    no = `+91${no}`;
+    client.messages
+    .create({
+       body: 'Hey Join our discord chat for some amazing career updates!!',
+       from: '+15155237590',
+       to: no
+     })
+    .then(message => console.log(message.sid));
 }
